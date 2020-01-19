@@ -54,6 +54,7 @@ client.on('guildMemberAdd', member => {
     if (!channel) return;
     // Send the message, mentioning the member
     channel.send(`Welcome to the server, ${member}`);
+    member.send(`Welcome to ${member.guild.name}! I am active on this server. You can find out what I do by typing \`!help\``);
 });
 
 //Message for when a channel is created
@@ -113,4 +114,4 @@ function multiplyCommand(arguments, receivedMessage) {
     receivedMessage.channel.send("The product of " + arguments + " multiplied together is: " + product.toString())
 }
 
-client.login('NjY4NDI4MzY1NTg1NDQ4OTcx.XiR7KA.8pY3DGVbgYGuL53K32C4DwYb1IQ');
+client.login('NjY4NDI4MzY1NTg1NDQ4OTcx.XiSjOA.qVpDYPw6gfZFTFYmHi7atUMGabM');
