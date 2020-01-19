@@ -3,20 +3,26 @@ const client = new Client();
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    client.user.setActivity("with JavaScript");
 });
 
 client.on('message', msg => {
+    if (msg.author == client.user) { // Prevent bot from responding to its own messages
+        return;
+    }
+    if (msg.content.startsWith("!")) {
+        processCommand(msg);
+    }
     if (msg.content === 'ping') {
         msg.reply('pong');
     }
     //If the message is "how are you"
-    if(msg.content === 'how are you') {
+    if (msg.content.includes('how are you')) {
         msg.channel.send(`I\'m great, and how are you ${msg.author}?`);
     }
-    if (msg.content === 'what is my avatar') {
-        // Trigger self conversation
-        msg.channel.send('how are you');
-    }
+    /**if (msg.content.includes(client.user.username)){
+        console.log(`I was tagged by ${msg.author.name}`);
+    }**/
     // If the message is "how to embed"
     if (msg.content === 'how to embed') {
         // We can create embeds using the MessageEmbed constructor
@@ -35,6 +41,10 @@ client.on('message', msg => {
     if (msg.content === "tada"){
         msg.reply('I\'m great, aren\'t I!');
     }
+    //Spread love with this message
+    if (msg.content.includes('love')){ 
+        msg.author.send("I love you too");
+    }
 });
 
 client.on('guildMemberAdd', member => {
@@ -45,5 +55,62 @@ client.on('guildMemberAdd', member => {
     // Send the message, mentioning the member
     channel.send(`Welcome to the server, ${member}`);
 });
+
+//Message for when a channel is created
+client.on('channelCreate', channel => {
+    if(channel.name = "undefined") return;
+    
+    const cha = client.channels.find(ch => ch.name === 'general');
+    if (!cha) return;
+
+    cha.send(`New channel created: \"${channel.name}\"`);
+});
+
+//Message for when a channel is deleted
+client.on('channelDelete', channel => {
+    const cha = client.channels.find(ch => ch.name === 'general');
+    if (!cha) return;
+
+    cha.send(`Channel deleted, goodbye \"${channel.name}\"`);
+});
+
+function processCommand(receivedMessage) {
+    let fullCommand = receivedMessage.content.substr(1) // Remove the leading exclamation mark
+    let splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
+    let primaryCommand = splitCommand[0] // The first word directly after the exclamation is the command
+    let arguments = splitCommand.slice(1) // All other words are arguments/parameters/options for the command
+
+    console.log("Command received: " + primaryCommand)
+    console.log("Arguments: " + arguments) // There may not be any arguments
+
+    if (primaryCommand == "help") {
+        helpCommand(arguments, receivedMessage)
+    } else if (primaryCommand == "multiply") {
+        multiplyCommand(arguments, receivedMessage)
+    } else {
+        receivedMessage.channel.send("I don't understand the command. Try `!help` or `!multiply`")
+    }
+}
+
+function helpCommand(arguments, receivedMessage) {
+    if (arguments.length > 0) {
+        receivedMessage.channel.send("It looks like you might need help with " + arguments)
+    } else {
+        receivedMessage.channel.send("I can:\n`!multiply [args]`\nI also react to phrases like 'how to embed',\
+ 'ping', 'how are you' and 'tada'");
+    }
+}
+
+function multiplyCommand(arguments, receivedMessage) {
+    if (arguments.length < 2) {
+        receivedMessage.channel.send("Not enough values to multiply. Try `!multiply 2 4 10` or `!multiply 5.2 7`")
+        return
+    }
+    let product = 1 
+    arguments.forEach((value) => {
+        product = product * parseFloat(value)
+    })
+    receivedMessage.channel.send("The product of " + arguments + " multiplied together is: " + product.toString())
+}
 
 client.login('NjY4NDI4MzY1NTg1NDQ4OTcx.XiR7KA.8pY3DGVbgYGuL53K32C4DwYb1IQ');
