@@ -11,7 +11,7 @@ client.on('message', msg => {
     }
     //If the message is "how are you"
     if(msg.content === 'how are you') {
-        msg.channel.send(`I'm great, and how are you ${msg.author}?`);
+        msg.channel.send(`I\'m great, and how are you ${msg.author}?`);
     }
     if (msg.content === 'what is my avatar') {
         // Trigger self conversation
@@ -33,7 +33,7 @@ client.on('message', msg => {
         msg.channel.send(embed);
     }
     if (msg.content === "tada"){
-        msg.reply("I'm great, aren't I!");
+        msg.reply('I\'m great, aren\'t I!');
     }
 });
 
@@ -46,4 +46,4 @@ client.on('guildMemberAdd', member => {
     channel.send(`Welcome to the server, ${member}`);
 });
 
-client.login('NjY4NDI4MzY1NTg1NDQ4OTcx.XiRJZA.x5WtF_rlGhV-s6zhSBMC3CJN_5k');
+client.login('NjY4NDI4MzY1NTg1NDQ4OTcx.XiR7KA.8pY3DGVbgYGuL53K32C4DwYb1IQ');
