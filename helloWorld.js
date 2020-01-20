@@ -1,5 +1,7 @@
 const {Client, RichEmbed} = require('discord.js');
 const client = new Client();
+const file = require('./auth.json');
+//auth = JSON.parse(file);
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -114,4 +116,4 @@ function multiplyCommand(arguments, receivedMessage) {
     receivedMessage.channel.send("The product of " + arguments + " multiplied together is: " + product.toString())
 }
 
-client.login('NjY4NDI4MzY1NTg1NDQ4OTcx.XiSjOA.qVpDYPw6gfZFTFYmHi7atUMGabM');
+client.login(file.token);
