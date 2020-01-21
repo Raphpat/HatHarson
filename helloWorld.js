@@ -1,7 +1,8 @@
 const {Client, RichEmbed} = require('discord.js');
 const client = new Client();
-const file = require('./auth.json');
-//auth = JSON.parse(file);
+const auth = require('./auth.json');
+const fs = require('fs');
+var swear = require('./ressources/swearWords.json');
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
@@ -47,6 +48,9 @@ client.on('message', msg => {
     if (msg.content.includes('love')){ 
         msg.author.send("I love you too");
     }
+    if (swear.status && checkWords(msg)){
+        deleteMessage(msg);
+    }
 });
 
 client.on('guildMemberAdd', member => {
@@ -77,6 +81,10 @@ client.on('channelDelete', channel => {
     cha.send(`Channel deleted, goodbye \"${channel.name}\"`);
 });
 
+/**
+ * Process received message for a command
+ * @param {*} receivedMessage Original message
+ */
 function processCommand(receivedMessage) {
     let fullCommand = receivedMessage.content.substr(1) // Remove the leading exclamation mark
     let splitCommand = fullCommand.split(" ") // Split the message up in to pieces for each space
@@ -90,11 +98,20 @@ function processCommand(receivedMessage) {
         helpCommand(arguments, receivedMessage)
     } else if (primaryCommand == "multiply") {
         multiplyCommand(arguments, receivedMessage)
+    } else if (primaryCommand == "toggleCensorship"){
+        toggleCensorship(arguments, receivedMessage);
+    } else if (primaryCommand == "censor"){
+        censor(arguments, receivedMessage);
     } else {
         receivedMessage.channel.send("I don't understand the command. Try `!help` or `!multiply`")
     }
 }
 
+/**
+ * Help function
+ * @param {*} arguments prints out message with argument at end
+ * @param {*} receivedMessage Original message
+ */
 function helpCommand(arguments, receivedMessage) {
     if (arguments.length > 0) {
         receivedMessage.channel.send("It looks like you might need help with " + arguments)
@@ -104,6 +121,11 @@ function helpCommand(arguments, receivedMessage) {
     }
 }
 
+/**
+ * Multiplies arguments
+ * @param {*} arguments Array of numbers to be multiplied
+ * @param {*} receivedMessage Original message
+ */
 function multiplyCommand(arguments, receivedMessage) {
     if (arguments.length < 2) {
         receivedMessage.channel.send("Not enough values to multiply. Try `!multiply 2 4 10` or `!multiply 5.2 7`")
@@ -116,4 +138,69 @@ function multiplyCommand(arguments, receivedMessage) {
     receivedMessage.channel.send("The product of " + arguments + " multiplied together is: " + product.toString())
 }
 
-client.login(file.token);
+/**
+ * Toggle censorship on/off
+ * @param {*} arguments 
+ * @param {*} receivedMessage Original message
+ */
+function toggleCensorship(arguments, receivedMessage){
+    if(swear.status == false){
+        swear.status = true;
+        
+        console.log("censorhip set to true");
+    } else{
+        swear.status = false;
+        console.log("censorhip set to false");
+    }
+    fs.writeFileSync('./ressources/swearWords.json', JSON.stringify(swear));
+}
+
+/**
+ * Censor last messages
+ * @param {*} arguments nothing much
+ * @param {*} receivedMessage Original message
+ */
+function censor(arguments, receivedMessage){
+    receivedMessage.channel.fetchMessages({ limit: 10 })
+    .then(messages => censorArray(messages.array()))
+    .catch(console.error);
+}
+
+/**
+ * Check words in a message for swear words
+ * @param {*} msg message to check
+ * @return true if there is a swear word
+ */
+function checkWords(msg){
+    for(j = 0; j < swear.words.length; j++){
+        if(msg.content.includes(swear.words[j])){
+            deleteMessage(msg);
+            break;
+        }
+    }
+}
+
+/**
+ * For each message, check if it contains a swear word
+ * @param {*} arr Array of messages
+ */
+function censorArray(arr){
+    console.log("got to censorArray, " + arr.length);
+    for(i = 0; i < arr.length; i++){
+        checkWords(arr[i]);
+        console.log(arr[i].content);
+    }
+    arr[0].channel.send("No swear words ;)");
+}
+
+/**
+ * Delete a message
+ * @param {*} msg Message to be deleted
+ */
+function deleteMessage(msg){
+    msg.delete();
+    console.log(`Deleted message from ${msg.author.username}`);
+    msg.channel.send('You swore', {files: ["./ressources/consuela.jpg"]});
+}
+
+client.login(auth.token);
