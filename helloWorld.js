@@ -13,19 +13,24 @@ client.on('message', msg => {
     if (msg.author == client.user) { // Prevent bot from responding to its own messages
         return;
     }
+    
     if (msg.content.startsWith("!")) {
         processCommand(msg);
     }
+    
     if (msg.content === 'ping') {
         msg.reply('pong');
     }
+    
     //If the message is "how are you"
     if (msg.content.includes('how are you')) {
         msg.channel.send(`I\'m great, and how are you ${msg.author}?`);
     }
+    
     /**if (msg.content.includes(client.user.username)){
         console.log(`I was tagged by ${msg.author.name}`);
     }**/
+    
     // If the message is "how to embed"
     if (msg.content === 'how to embed') {
         // We can create embeds using the MessageEmbed constructor
@@ -41,13 +46,16 @@ client.on('message', msg => {
         // Send the embed to the same channel as the message
         msg.channel.send(embed);
     }
+    
     if (msg.content === "tada"){
         msg.reply('I\'m great, aren\'t I!');
     }
+
     //Spread love with this message
     if (msg.content.includes('love')){ 
         msg.author.send("I love you too");
     }
+
     if (swear.status && checkWords(msg)){
         deleteMessage(msg);
     }
@@ -116,7 +124,7 @@ function helpCommand(arguments, receivedMessage) {
     if (arguments.length > 0) {
         receivedMessage.channel.send("It looks like you might need help with " + arguments)
     } else {
-        receivedMessage.channel.send("I can:\n`!multiply [args]`\nI also react to phrases like 'how to embed',\
+        receivedMessage.channel.send("I can:\n`!multiply [args]`\n`!censor`\nI also react to phrases like 'how to embed',\
  'ping', 'how are you' and 'tada'");
     }
 }
