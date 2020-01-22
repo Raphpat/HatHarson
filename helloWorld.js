@@ -174,23 +174,28 @@ function censor(arguments, receivedMessage){
 function checkWords(msg){
     for(j = 0; j < swear.words.length; j++){
         if(msg.content.includes(swear.words[j])){
-            deleteMessage(msg);
-            break;
+            return true;
         }
     }
+    return false;
 }
 
 /**
  * For each message, check if it contains a swear word
  * @param {*} arr Array of messages
+ * @return true if a message has been censored to only delete one at a time or false if non
  */
 function censorArray(arr){
-    console.log("got to censorArray, " + arr.length);
     for(i = 0; i < arr.length; i++){
-        checkWords(arr[i]);
-        console.log(arr[i].content);
+        if(checkWords(arr[i])){
+            console.log(arr[i].content);
+            deleteMessage(arr[i]);
+            return true;
+        }
+        
     }
     arr[0].channel.send("No swear words ;)");
+    return(false);
 }
 
 /**
